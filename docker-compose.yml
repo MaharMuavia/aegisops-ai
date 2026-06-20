@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: aegisops_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: aegisops
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - aegisops_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: aegisops_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - aegisops_net
+
+  chroma:
+    image: chromadb/chroma:0.4.15
+    container_name: aegisops_chroma
+    restart: always
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/chroma/data
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/data
+    networks:
+      - aegisops_net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: aegisops_backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgrespassword@db:5432/aegisops
+      - CHROMA_DB_DIR=http://chroma:8000
+      - REDIS_URL=redis://redis:6379/0
+      - SIMULATION_MODE=true
+      - SECRET_KEY=super-secret-aegisops-ops-token-2026
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+      - chroma
+    volumes:
+      - ./backend:/app
+    networks:
+      - aegisops_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: aegisops_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+    depends_on:
+      - backend
+    networks:
+      - aegisops_net
+
+volumes:
+  postgres_data:
+  chroma_data:
+
+networks:
+  aegisops_net:
+    driver: bridge
