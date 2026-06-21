@@ -55,9 +55,9 @@ simulation mode — built so judges, recruiters, and you can clone it,
 
 ![Landing page — Operational Broadsheet aesthetic](docs/screenshots/01-landing.png)
 
-A custom-typed editorial layout — **Bricolage Grotesque** display, **Hanken
-Grotesk** body, **JetBrains Mono** for telemetry — sitting on warm bone paper
-with a vermilion accent. No purple gradients. No Inter on grey.
+A custom-typed editorial layout — **Inter Tight** for heavy, tight display
+headings, **Inter** for body, **JetBrains Mono** for telemetry — sitting on
+warm bone paper with a vermilion accent.
 
 ---
 
@@ -178,7 +178,7 @@ allocation grid.
 ├────────────────────┼─────────────────────────────────────────────────┤
 │ Frontend           │  Next.js 15 (App Router) · React 19 · TS        │
 │                    │  Tailwind v4 · TanStack Query · Zustand         │
-│                    │  Bricolage Grotesque · Hanken Grotesk           │
+│                    │  Inter Tight (display) · Inter (body)           │
 │                    │  JetBrains Mono · lucide-react                  │
 ├────────────────────┼─────────────────────────────────────────────────┤
 │ Orchestration      │  Simulated UiPath Maestro sequential workflow   │

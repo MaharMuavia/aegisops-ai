@@ -1,15 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Bricolage_Grotesque, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import ReactQueryProvider from "@/components/ReactQueryProvider";
 
-// Dark SOC app keeps Geist
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
-
-// Public-facing "Operational Broadsheet" type system
-const bricolage = Bricolage_Grotesque({ variable: "--font-display", subsets: ["latin"], display: "swap" });
-const hanken = Hanken_Grotesk({ variable: "--font-body", subsets: ["latin"], display: "swap" });
+// Inter type system — heavy, tight display headings + a clean body, matching brand
+const interTight = Inter_Tight({ variable: "--font-display", subsets: ["latin"], display: "swap" });
+const inter = Inter({ variable: "--font-body", subsets: ["latin"], display: "swap" });
 const jetbrains = JetBrains_Mono({ variable: "--font-data", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
@@ -25,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} ${hanken.variable} ${jetbrains.variable} antialiased`}
+        className={`${interTight.variable} ${inter.variable} ${jetbrains.variable} antialiased`}
       >
         <ReactQueryProvider>
           {children}

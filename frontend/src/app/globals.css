@@ -24,8 +24,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-data);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -38,12 +38,12 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), system-ui, -apple-system, sans-serif;
 }
 
-/* ---- Public type system ---- */
-.font-display { font-family: var(--font-display), Georgia, serif; }
-.font-body { font-family: var(--font-body), system-ui, sans-serif; }
+/* ---- Inter type system ---- */
+.font-display { font-family: var(--font-display), system-ui, -apple-system, sans-serif; }
+.font-body { font-family: var(--font-body), system-ui, -apple-system, sans-serif; }
 .font-data { font-family: var(--font-data), ui-monospace, "SFMono-Regular", monospace; }
 
 /* ---- Paper texture: faint engineering grid + warm grain ---- */
