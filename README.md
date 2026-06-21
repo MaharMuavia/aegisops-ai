@@ -21,11 +21,17 @@
 A six-agent crew — intake to audit — that triages, diagnoses, and remediates
 production incidents in minutes, with a human approval gate on every critical fix.
 
-[![Hackathon](https://img.shields.io/badge/UiPath-AgentHack%202026-d9381e?style=flat-square)](https://uipath.com)
+[![CI](https://img.shields.io/github/actions/workflow/status/MaharMuavia/aegisops-ai/ci.yml?branch=main&style=flat-square&label=CI%20%C2%B7%20build%20the%20bridge&labelColor=1b1813)](https://github.com/MaharMuavia/aegisops-ai/actions/workflows/ci.yml)
+[![Last commit](https://img.shields.io/github/last-commit/MaharMuavia/aegisops-ai?style=flat-square&labelColor=1b1813&color=d9381e)](https://github.com/MaharMuavia/aegisops-ai/commits/main)
+[![License](https://img.shields.io/badge/license-MIT-1f7a5c?style=flat-square&labelColor=1b1813)](#)
+[![Hackathon](https://img.shields.io/badge/UiPath-AgentHack%202026-d9381e?style=flat-square&labelColor=1b1813)](https://uipath.com)
+
 [![Next.js](https://img.shields.io/badge/Next.js-15-1b1813?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-1b1813?style=flat-square&logo=react&logoColor=white)](https://react.dev)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Python%203.12-1f7a5c?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![CrewAI](https://img.shields.io/badge/CrewAI-sequential-d9381e?style=flat-square)](https://github.com/crewAIInc/crewAI)
-[![Simulation](https://img.shields.io/badge/runs-zero%20API%20keys-1f7a5c?style=flat-square)](#simulation-mode)
+[![Tailwind](https://img.shields.io/badge/Tailwind-v4-1b1813?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Simulation](https://img.shields.io/badge/runs-zero%20API%20keys-1f7a5c?style=flat-square&labelColor=1b1813)](#-simulation-mode--the-magic)
 
 </div>
 

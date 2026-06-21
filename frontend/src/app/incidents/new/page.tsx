@@ -67,8 +67,9 @@ export default function SubmitIncidentPage() {
       }
       const data = await response.json();
       router.push(`/incidents/${data.id}`);
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "An unexpected error occurred.";
+      setError(msg);
     } finally {
       setLoading(false);
     }

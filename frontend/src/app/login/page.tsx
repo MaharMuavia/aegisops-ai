@@ -51,8 +51,9 @@ export default function LoginPage() {
       const data = await response.json();
       login(data.username, data.role, data.access_token);
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.message || "Connection refused: ensure the FastAPI backend is running.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Connection refused: ensure the FastAPI backend is running.";
+      setError(msg);
     } finally {
       setLoading(false);
     }

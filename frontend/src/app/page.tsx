@@ -311,7 +311,7 @@ export default function LandingPage() {
           <p className="mt-5 text-[16px] text-[var(--ink-soft)] leading-[1.65] max-w-lg">
             The agents move fast, but they never push a critical change alone. When severity
             is critical — or root-cause confidence drops below 70% — the workflow halts and
-            routes to a manager. Approve, and remediation resumes. Reject, and it's logged.
+            routes to a manager. Approve, and remediation resumes. Reject, and it&rsquo;s logged.
           </p>
 
           <div className="mt-8 space-y-3">
