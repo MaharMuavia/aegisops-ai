@@ -17,7 +17,7 @@
         ╚══════════════════════════════════════════════════════════╝
 ```
 
-**Resolve outages before the war room fills up.**
+**Resolve outages before the war room fills up.**  
 A six-agent crew — intake to audit — that triages, diagnoses, and remediates
 production incidents in minutes, with a human approval gate on every critical fix.
 
@@ -33,7 +33,52 @@ production incidents in minutes, with a human approval gate on every critical fi
 [![Tailwind](https://img.shields.io/badge/Tailwind-v4-1b1813?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Simulation](https://img.shields.io/badge/runs-zero%20API%20keys-1f7a5c?style=flat-square&labelColor=1b1813)](#-simulation-mode--the-magic)
 
+**[🎬 Demo Video](#) · [📊 Presentation Deck](#) · [🚀 Quick Start](#quick-start) · [📖 Full Docs](#-running-the-platform--two-routes)**
+
 </div>
+
+---
+
+## ⚡ Quick Start
+
+**Get running in 3 minutes:**
+
+```bash
+# Backend
+cd backend
+python -m venv .venv && source .venv/Scripts/activate   # Windows
+pip install -r requirements.txt
+python run.py    # http://localhost:8001
+
+# Frontend (new terminal)
+cd frontend
+npm install
+npm run dev       # http://localhost:3000
+```
+
+**One-command full stack:**
+```bash
+docker compose up --build
+```
+
+**Demo logins** (password: `password`):
+- `admin` — Full access
+- `manager` — Approve/reject incidents  
+- `engineer` — File incidents, watch agents
+- `auditor` — Read-only audit trail
+
+---
+
+## 📑 Navigation
+
+| Section | Purpose |
+|---------|---------|
+| [Problem & Solution](#-the-wire--what-this-is) | What AegisOps solves |
+| [UiPath Components](#-for-the-jury--uipath-components--agent-type) | Components used (required for judges) |
+| [Architecture](#-the-orchestration--how-a-ticket-moves) | System design |
+| [Setup & Run](#-running-the-platform) | Installation & execution |
+| [Simulation Mode](#-simulation-mode--the-magic) | How the demo works |
+| [Repo Structure](#-repo-map--where-things-live) | File layout |
 
 ---
 
@@ -225,32 +270,38 @@ allocation grid.
 
 ---
 
-## ┃ RUNNING THE PLATFORM  ·  *two routes*
+## ┃ RUNNING THE PLATFORM
 
-### ▷ Local development *(simplest)*
+### 🖥️ Local development
 
+**Step 1: Backend**
 ```bash
-# 1. backend
 cd backend
-python -m venv .venv && source .venv/Scripts/activate   # Windows
+python -m venv .venv
+source .venv/Scripts/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python run.py            # seeds DB, serves on http://localhost:8001
-
-# 2. frontend (new shell)
-cd frontend
-npm install
-npm run dev              # http://localhost:3000
+python run.py                       # Seeds DB, runs on http://localhost:8001
 ```
 
-> **Port note.** Backend defaults to **8001** locally (8000 is commonly
-> occupied). Override with `APP_PORT=8000 python run.py`.
+**Step 2: Frontend** (in a new terminal)
+```bash
+cd frontend
+npm install
+npm run dev                         # http://localhost:3000
+```
 
-### ▷ Full stack via Docker Compose
+**Step 3: Access**
+- Frontend: http://localhost:3000
+- API docs: http://localhost:8001/docs
+- Use demo logins: `admin`/`manager`/`engineer`/`auditor` (password: `password`)
+
+### 🐳 Full stack via Docker Compose
 
 ```bash
 docker compose up --build
 ```
-Brings up Postgres + Redis + ChromaDB + backend + frontend.
+
+All services (Postgres, Redis, ChromaDB, backend, frontend) start automatically.
 
 ---
 
@@ -279,30 +330,46 @@ never dies on stage.
 ```
 .
 ├── backend/
-│   ├── app/
-│   │   ├── api/endpoints/      auth · incidents · approvals · audit · metrics · agents
-│   │   ├── services/
-│   │   │   ├── agents.py             — CrewAI agents + simulation engine
-│   │   │   ├── rag_service.py        — ChromaDB + SQL keyword fallback
-│   │   │   └── uipath_maestro.py     — the orchestrator (the heart)
-│   │   ├── db/models.py        SQLAlchemy schema
-│   │   └── core/config.py      pydantic-settings · env-driven
-│   ├── run.py                  single dev entrypoint
-│   └── seed_data.py            4 users + SOPs + demo incidents
-├── frontend/
-│   └── src/app/
-│       ├── page.tsx            ← landing  (public)
-│       ├── login/              ← sign in  (public)
-│       ├── signup/             ← sign up  (public)
-│       ├── dashboard/          ← SOC command center
-│       ├── incidents/[id]/     ← 4-tab investigation file
-│       ├── approvals/          ← manager queue
-│       ├── audit/              ← immutable trail
-│       └── analytics/          ← KPIs & benchmarks
-├── docker-compose.yml          postgres + redis + chroma + be + fe
-├── CLAUDE.md                   project notes for AI assistants
-└── docs/screenshots/           images used in this dispatch
+│   ├── app/api/endpoints/
+│   │   ├── auth.py             JWT login, token refresh
+│   │   ├── incidents.py        File incident, get status
+│   │   ├── approvals.py        Manager approval/rejection
+│   │   ├── audit.py            Immutable audit log
+│   │   ├── metrics.py          KPIs, agent performance
+│   │   └── agents.py           Chat, agent status
+│   ├── app/services/
+│   │   ├── agents.py           CrewAI agents + simulation engine
+│   │   ├── rag_service.py      ChromaDB + SQL fallback
+│   │   └── uipath_maestro.py   Orchestrator (the heart)
+│   ├── app/db/models.py        SQLAlchemy schema
+│   ├── run.py                  Single dev entrypoint
+│   └── requirements.txt        Python dependencies
+│
+├── frontend/src/app/
+│   ├── page.tsx                Landing page
+│   ├── (auth)/
+│   │   ├── login/page.tsx      Sign in
+│   │   └── signup/page.tsx     Register
+│   ├── dashboard/page.tsx      SOC command center
+│   ├── incidents/
+│   │   ├── page.tsx            List
+│   │   ├── new/page.tsx        Create
+│   │   └── [id]/page.tsx       Detail (4 tabs)
+│   ├── approvals/page.tsx      Manager queue
+│   ├── audit/page.tsx          Audit trail
+│   └── analytics/page.tsx      KPIs & benchmarks
+│
+├── docker-compose.yml          Full-stack orchestration
+├── .github/workflows/ci.yml    Build + lint + test
+├── CLAUDE.md                   Dev notes
+└── docs/screenshots/           Demo images
 ```
+
+**Key files for judges:**
+- [`backend/app/services/agents.py`](backend/app/services/agents.py) — Coded agents (CrewAI)
+- [`backend/app/services/uipath_maestro.py`](backend/app/services/uipath_maestro.py) — Orchestration logic
+- [`backend/app/api/endpoints/approvals.py`](backend/app/api/endpoints/approvals.py) — Human-in-the-loop gate
+- [`frontend/src/app/dashboard/page.tsx`](frontend/src/app/dashboard/page.tsx) — UI showcase
 
 ---
 
