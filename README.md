@@ -51,6 +51,36 @@ simulation mode — built so judges, recruiters, and you can clone it,
 
 ---
 
+## ┃ FOR THE JURY  ·  *UiPath components & agent type*
+
+**Problem it solves.** Production incident response is slow, manual, and
+error-prone — triage, log analysis, runbook lookup, and root-cause all happen
+by hand under SLA pressure. AegisOps automates the repeatable 80% with a crew
+of agents while keeping a human approval gate on the dangerous 20%.
+
+**Agent type — Coded Agents.** All six agents are **code-defined (coded
+agents)**, implemented in Python with CrewAI role/goal/backstory definitions in
+[`backend/app/services/agents.py`](backend/app/services/agents.py). There are
+no low-code/Studio-designed agents in this solution.
+
+**UiPath components used:**
+
+| Component | Role in AegisOps |
+| :-------- | :--------------- |
+| **UiPath Maestro** | Orchestration layer — drives the sequential six-agent master workflow, the per-agent retry loop (up to 3×), and the human-in-the-loop escalation gate. Implemented in [`uipath/uipath_maestro_flow.py`](uipath/uipath_maestro_flow.py) and [`backend/app/services/uipath_maestro.py`](backend/app/services/uipath_maestro.py). |
+| **Coded Agents** | The six analysis agents (Intake → Audit), defined in code via CrewAI. |
+| **API Workflows** | The FastAPI backend exposes incident, approval, and audit operations the orchestration calls. |
+| **Human-in-the-loop / Action App** | Manager approval gate: critical or sub-70%-confidence incidents halt and route to a human approver before remediation. |
+
+> **Simulation mode.** `SIMULATION_MODE=true` (the default) runs the agent
+> pipeline deterministically with **zero external dependencies or API keys** so
+> the demo is reproducible for judging. Set `SIMULATION_MODE=false` +
+> `OPENAI_API_KEY` to execute real CrewAI; on any error it falls back to
+> simulation. Setup steps for both modes are in the **Running the platform**
+> section below.
+
+---
+
 ## ┃ EXHIBIT A  ·  *the landing*
 
 ![Landing page — Operational Broadsheet aesthetic](docs/screenshots/01-landing.png)
