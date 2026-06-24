@@ -229,6 +229,12 @@ Every agent trigger, every retry, every manager decision, every status
 transition — sealed into a read-only table with severity badges and per-row
 incident links. Filterable, searchable, regulator-ready.
 
+Each incident also has a **"Download report"** button (top-right of the
+detail page) that exports the full case file as plain text — description,
+root cause, resolution plan, every agent's findings, the approval decision,
+and the complete immutable audit trail. Served by
+[`GET /api/incidents/{id}/report`](backend/app/api/endpoints/incidents.py).
+
 ![Audit Center](docs/screenshots/06-audit.png)
 
 ---

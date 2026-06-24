@@ -17,6 +17,7 @@ import {
   ThumbsUp,
   ThumbsDown,
   Info,
+  Download,
 } from "lucide-react";
 
 interface AgentResult {
@@ -76,7 +77,29 @@ export default function IncidentDetailPage() {
   const [activeTab, setActiveTab] = useState<"maestro" | "findings" | "plan" | "history">("maestro");
   const [approvalComment, setApprovalComment] = useState("");
   const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
+  const [isDownloading, setIsDownloading] = useState(false);
   const terminalEndRef = useRef<HTMLDivElement>(null);
+
+  const handleDownloadReport = async () => {
+    setIsDownloading(true);
+    try {
+      const res = await fetch(`http://localhost:8001/api/incidents/${incidentId}/report`, {
+        headers: { Authorization: `Bearer ${user?.token}` },
+      });
+      if (!res.ok) throw new Error("Failed to generate report");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `INC-${incidentId}-report.txt`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   const { data: incident, isLoading, error } = useQuery<IncidentDetail>({
     queryKey: ["incident", incidentId],
@@ -245,6 +268,15 @@ export default function IncidentDetailPage() {
             </div>
             <p className="text-[12.5px] text-[var(--ink-soft)] mt-1 max-w-2xl leading-relaxed">{incident.description}</p>
           </div>
+
+          <button
+            onClick={handleDownloadReport}
+            disabled={isDownloading || incident.status === "open"}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-[var(--line-strong)] bg-white hover:border-[var(--ink)] text-xs font-semibold text-[var(--ink-soft)] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+          >
+            {isDownloading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+            Download report
+          </button>
         </div>
 
         {/* Approval gate */}
