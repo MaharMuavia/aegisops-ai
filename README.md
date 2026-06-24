@@ -31,13 +31,17 @@ production incidents in minutes, with a human approval gate on every critical fi
 [![FastAPI](https://img.shields.io/badge/FastAPI-Python%203.12-1f7a5c?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![CrewAI](https://img.shields.io/badge/CrewAI-sequential-d9381e?style=flat-square)](https://github.com/crewAIInc/crewAI)
 [![Tailwind](https://img.shields.io/badge/Tailwind-v4-1b1813?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![Simulation](https://img.shields.io/badge/runs-zero%20API%20keys-1f7a5c?style=flat-square&labelColor=1b1813)](#-simulation-mode--the-magic)
+[![Simulation](https://img.shields.io/badge/runs-zero%20API%20keys-1f7a5c?style=flat-square&labelColor=1b1813)](#sec-simulation)
 
-**[🎬 Demo Video](#) · [📊 Presentation Deck](#) · [🚀 Quick Start](#quick-start) · [📖 Full Docs](#-running-the-platform--two-routes)**
+**[🎬 Watch the Demo](https://youtu.be/Xa3JxiJV158) · [📊 Presentation Deck](https://docs.google.com/presentation/d/1H5sW_55V2HzTdZhr1lUbJ7WXjz7Ewxll/edit?usp=sharing) · [🚀 Quick Start](#quick-start) · [📖 Full Docs](#sec-running)**
+
+[![Watch the demo](https://img.youtube.com/vi/Xa3JxiJV158/maxresdefault.jpg)](https://youtu.be/Xa3JxiJV158)
 
 </div>
 
 ---
+
+<a id="quick-start"></a>
 
 ## ⚡ Quick Start
 
@@ -73,14 +77,16 @@ docker compose up --build
 
 | Section | Purpose |
 |---------|---------|
-| [Problem & Solution](#-the-wire--what-this-is) | What AegisOps solves |
-| [UiPath Components](#-for-the-jury--uipath-components--agent-type) | Components used (required for judges) |
-| [Architecture](#-the-orchestration--how-a-ticket-moves) | System design |
-| [Setup & Run](#-running-the-platform) | Installation & execution |
-| [Simulation Mode](#-simulation-mode--the-magic) | How the demo works |
-| [Repo Structure](#-repo-map--where-things-live) | File layout |
+| [Problem & Solution](#sec-wire) | What AegisOps solves |
+| [UiPath Components](#sec-jury) | Components used (required for judges) |
+| [Architecture](#sec-orchestration) | System design |
+| [Setup & Run](#sec-running) | Installation & execution |
+| [Simulation Mode](#sec-simulation) | How the demo works |
+| [Repo Structure](#sec-repomap) | File layout |
 
 ---
+
+<a id="sec-wire"></a>
 
 ## ┃ THE WIRE  ·  *what this is*
 
@@ -95,6 +101,8 @@ simulation mode — built so judges, recruiters, and you can clone it,
 `docker compose up`, and watch agents work in under three minutes.
 
 ---
+
+<a id="sec-jury"></a>
 
 ## ┃ FOR THE JURY  ·  *UiPath components & agent type*
 
@@ -135,6 +143,8 @@ headings, **Inter** for body, **JetBrains Mono** for telemetry — sitting on
 warm bone paper with a vermilion accent.
 
 ---
+
+<a id="sec-orchestration"></a>
 
 ## ┃ THE ORCHESTRATION  ·  *how a ticket moves*
 
@@ -218,6 +228,9 @@ Each ticket gets a four-tab investigation file: the **Maestro orchestrator**
 
 When the workflow hits the escalation gate, the human-in-the-loop amber panel
 appears at the top — and only the `manager` and `admin` roles can action it.
+Every incident also has a **one-click downloadable report** — a plain-text
+export of the full agent trail, root cause, resolution plan, approval
+decision, and immutable audit log, ready to hand to compliance.
 
 ![Incident detail — full workflow + approval gate](docs/screenshots/05-incident-approval.png)
 
@@ -276,6 +289,8 @@ allocation grid.
 
 ---
 
+<a id="sec-running"></a>
+
 ## ┃ RUNNING THE PLATFORM
 
 ### 🖥️ Local development
@@ -311,6 +326,8 @@ All services (Postgres, Redis, ChromaDB, backend, frontend) start automatically.
 
 ---
 
+<a id="sec-simulation"></a>
+
 ## ┃ SIMULATION MODE  ·  *the magic*
 
 `SIMULATION_MODE=true` (the default) means **the entire agent pipeline runs
@@ -330,6 +347,8 @@ On any LLM error the platform silently falls back to simulation so the demo
 never dies on stage.
 
 ---
+
+<a id="sec-repomap"></a>
 
 ## ┃ REPO MAP  ·  *where things live*
 

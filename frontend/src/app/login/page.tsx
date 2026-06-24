@@ -64,6 +64,36 @@ export default function LoginPage() {
     setPassword("password");
   };
 
+  const handleGuestLogin = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const formData = new URLSearchParams();
+      formData.append("username", "admin");
+      formData.append("password", "password");
+
+      const response = await fetch("http://localhost:8001/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.detail || "Authentication failed");
+      }
+
+      const data = await response.json();
+      login("Guest", data.role, data.access_token);
+      router.push("/dashboard");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Connection refused: ensure the FastAPI backend is running.";
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="theme-light font-body min-h-screen bg-paper text-[var(--ink)] grid lg:grid-cols-[1.05fr_1fr]">
       {/* ===== Brand panel ===== */}
@@ -145,6 +175,16 @@ export default function LoginPage() {
               {loading ? (<><Loader2 className="w-4 h-4 animate-spin" /> Authenticating…</>) : (<>Enter command center <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" /></>)}
             </button>
           </form>
+
+          <button
+            type="button"
+            onClick={handleGuestLogin}
+            disabled={loading}
+            className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-md border border-[var(--line-strong)] bg-[var(--card)] py-3 text-[15px] font-semibold text-[var(--ink)] hover:border-[var(--accent)] hover:bg-[var(--paper-2)] transition disabled:opacity-60"
+          >
+            {loading ? (<><Loader2 className="w-4 h-4 animate-spin" /> Entering…</>) : "Continue as Guest"}
+          </button>
+          <p className="font-data text-[10.5px] text-[var(--muted)] mt-2 text-center">No credentials needed · explore the full platform</p>
 
           {/* Quick login */}
           <div className="mt-8">
