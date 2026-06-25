@@ -33,11 +33,213 @@ production incidents in minutes, with a human approval gate on every critical fi
 [![Tailwind](https://img.shields.io/badge/Tailwind-v4-1b1813?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Simulation](https://img.shields.io/badge/runs-zero%20API%20keys-1f7a5c?style=flat-square&labelColor=1b1813)](#sec-simulation)
 
-**[🎬 Watch the Demo](https://youtu.be/Xa3JxiJV158) · [📊 Presentation Deck](https://docs.google.com/presentation/d/1H5sW_55V2HzTdZhr1lUbJ7WXjz7Ewxll/edit?usp=sharing) · [🚀 Quick Start](#quick-start) · [📖 Full Docs](#sec-running)**
+**[🎬 Watch the Demo](https://youtu.be/Xa3JxiJV158) · [📊 Presentation Deck](https://docs.google.com/presentation/d/1H5sW_55V2HzTdZhr1lUbJ7WXjz7Ewxll/edit?usp=sharing) · [📋 Submission Brief](#submission-brief) · [🚀 Quick Start](#quick-start) · [📖 Full Docs](#sec-running)**
 
 [![Watch the demo](https://img.youtube.com/vi/Xa3JxiJV158/maxresdefault.jpg)](https://youtu.be/Xa3JxiJV158)
 
 </div>
+
+---
+
+<a id="submission-brief"></a>
+
+# 📋 Submission Brief — for AgentHack 2026 judges
+
+> The four sections below answer the required submission checklist directly.
+> Skip ahead if you'd rather see the live app at [Quick Start](#quick-start).
+
+## Project Description
+
+**AegisOps AI is a multi-agent IT incident-response command center.**
+
+**The problem.** When a production incident lands (auth service spiking 500s,
+DB pool exhausted, disk pressure on a storage node), the first 30 minutes are
+manual and slow: an engineer triages the ticket, pulls logs, hunts for the
+right runbook in scattered docs, forms a hypothesis, drafts a fix, and pages
+a manager for sign-off. Information is fragmented across tickets, logs,
+emails, and wikis. **Mean Time To Mitigation (MTTM) is dominated by
+hand-offs, not by the fix itself.**
+
+**The solution.** AegisOps dispatches a crew of six specialised AI agents
+that work a sequential master workflow — **Intake → Log Forensics →
+Knowledge (RAG) → Root Cause → Resolution → Audit** — with two safety
+mechanisms: (1) per-agent retries on transient failure, and (2) a
+human-in-the-loop approval gate that halts the pipeline whenever severity
+is critical or RCA confidence drops below 70%. Every agent decision, retry,
+and human override is sealed into an immutable audit trail. The platform
+ships with a SOC-style operator UI (dashboard, incident detail, approvals
+queue, audit center, analytics) so an on-call manager can watch agents
+work, approve fixes, and export a compliance-ready case file.
+
+**Outcome.** What used to take a war-room hour collapses to a few minutes
+of agent runtime + one human click — and produces a regulator-grade paper
+trail by default.
+
+## UiPath Components
+
+Honest accounting of what is present in this submission:
+
+| UiPath component | Used in AegisOps? | Where / how |
+| :--- | :--- | :--- |
+| **Coded Agents** | ✅ **Yes** | Six CrewAI agents (role / goal / backstory + delegation) defined in Python at [`backend/app/services/agents.py`](backend/app/services/agents.py). |
+| **UiPath Maestro (sequential master workflow)** | 🟡 **Pattern, implemented in code** | The Maestro sequential-orchestration pattern — sequential agent dispatch, per-agent retry loops, and human-in-the-loop escalation gates — is implemented in custom Python at [`backend/app/services/uipath_maestro.py`](backend/app/services/uipath_maestro.py). A separate end-to-end demo script at [`uipath/uipath_maestro_flow.py`](uipath/uipath_maestro_flow.py) acts as a headless Maestro client that drives the full workflow via the API. **This solution does not call the hosted UiPath Maestro product**; the orchestration pattern is reproduced in code so the demo runs anywhere with zero external dependencies. |
+| **API Workflows** | ✅ **Yes** | FastAPI surfaces 6 routers (`auth · incidents · approvals · audit · metrics · agents`) under `/api/*`; the orchestrator calls these endpoints to advance state. Full Swagger UI at `/docs`. See [`backend/app/api/endpoints/`](backend/app/api/endpoints/). |
+| **Human-in-the-loop approval gate** (Action App pattern) | ✅ **Yes, implemented in code** | The orchestrator halts on critical severity OR confidence < 70%, creates an `Approval` row, and waits. A manager/admin role actions the request from the Approvals Center UI; the workflow resumes via [`resume_after_approval`](backend/app/services/uipath_maestro.py). UI route: [`frontend/src/app/approvals/page.tsx`](frontend/src/app/approvals/page.tsx). |
+| **RAG / Knowledge Base** | ✅ **Yes** | ChromaDB vector store (when enabled) with a SQL keyword fallback over a `documents` table of Standard Operating Procedures. See [`backend/app/services/rag_service.py`](backend/app/services/rag_service.py). |
+| **Compliance / report export** | ✅ **Yes** | One-click downloadable incident report from the detail page — full agent trail, root cause, resolution plan, approval decision and audit log. Endpoint: `GET /api/incidents/{id}/report`. |
+| Agent Builder (low-code) | ❌ **No** | Not used in this submission. |
+| UiPath Studio (RPA) | ❌ **No** | Not used in this submission. |
+
+## Agent Type
+
+**Coded Agents — exclusively.**
+
+All six agents in this solution are **code-defined** (Python + CrewAI). No
+low-code / Agent Builder agents are used. Each agent has explicit `role`,
+`goal`, and `backstory` definitions and runs inside a sequential CrewAI
+process driven by the Maestro orchestrator.
+
+| # | Agent | Role | Goal |
+| :- | :--- | :--- | :--- |
+| 1 | **Intake Agent** | Triage Specialist | Parse the ticket, classify severity, extract metadata. |
+| 2 | **Log Forensics Agent** | Log Analyst | Scan uploaded logs for fatal patterns, build a degradation timeline. |
+| 3 | **Knowledge Agent** | SOP Retriever | Vector-search the RAG store for matching runbooks and prior fixes. |
+| 4 | **Root Cause Agent** | RCA Synthesiser | Fuse log anomalies with SOPs to locate the failure; emit a confidence score. |
+| 5 | **Resolution Agent** | Remediation Author | Draft a step-by-step fix with rollback safe-fails and a risk grade. |
+| 6 | **Audit Agent** | Compliance Officer | Seal an immutable record of every decision, retry and override. |
+
+Source of truth for the agent definitions:
+[`backend/app/services/agents.py`](backend/app/services/agents.py)
+
+## Setup Instructions
+
+Step-by-step instructions to run the full solution end-to-end for
+judging. The platform is designed to run with **zero external API keys** in
+default simulation mode.
+
+### Prerequisites
+
+| Tool | Version | Required for |
+| :--- | :--- | :--- |
+| Python | **3.10 +** (3.12 tested) | Backend |
+| Node.js | **20 +** | Frontend |
+| Git | any recent | Cloning |
+| Docker + Docker Compose | *(optional)* | Full-stack one-command run |
+
+### Path A — Local development (recommended for first run, ~3 minutes)
+
+**1. Clone the repository**
+
+```bash
+git clone https://github.com/MaharMuavia/aegisops-ai.git
+cd aegisops-ai
+```
+
+**2. Start the backend**
+
+```bash
+cd backend
+python -m venv .venv
+
+# macOS / Linux
+source .venv/bin/activate
+# Windows (Git Bash / PowerShell)
+source .venv/Scripts/activate
+
+pip install -r requirements.txt
+python run.py
+```
+
+**Expected output:**
+```
+Initialize AegisOps AI SOC database schema...
+Seeding database with default parameters...
+Seeding users completed. (Password for all is 'password')
+Launching FastAPI Web Server on http://localhost:8001...
+INFO:     Application startup complete.
+```
+
+✅ **Verify:** open <http://localhost:8001/docs> — you should see the Swagger UI listing the AegisOps API.
+
+**3. Start the frontend** *(new terminal)*
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+**Expected output:**
+```
+   ▲ Next.js 15.5.19 (Turbopack)
+   - Local:        http://localhost:3000
+ ✓ Ready in ~6s
+```
+
+✅ **Verify:** open <http://localhost:3000> — the landing page loads. Click **Sign in** and use the **Manager** quick-login (or any of the seeded accounts below).
+
+**4. Walk the demo flow**
+
+1. Sign in as **manager** (password `password`).
+2. Click **File new incident** and submit a ticket with title `Auth service login failures spiking` (the word `auth` triggers a critical-severity demo with 94% confidence).
+3. Watch the Maestro pipeline run in the **Maestro orchestrator** tab — six agents execute sequentially, terminal logs stream live.
+4. The workflow halts at the human approval gate. Provide a comment and click **Approve** — the workflow resumes and closes the incident.
+5. Open **Audit Center** to see the immutable trail; download the case file via **Download report** on the incident page.
+
+**5. (Optional) Run the headless Maestro demo script**
+
+A scripted end-to-end exercise of the workflow (intended as a Maestro-style job runner):
+
+```bash
+# Backend must be running. Note: this script uses port 8000;
+# override BASE_URL inside the file or run backend with APP_PORT=8000.
+python uipath/uipath_maestro_flow.py
+```
+
+It authenticates, files a critical incident, polls every agent state, hits the approval gate, approves as manager, and prints the final audit log.
+
+### Path B — Full stack via Docker Compose
+
+Brings up Postgres + Redis + ChromaDB + backend + frontend in one command.
+
+```bash
+docker compose up --build
+```
+
+Once the containers are healthy:
+- Frontend → <http://localhost:3000>
+- API docs → <http://localhost:8000/docs> *(Docker uses port 8000; local dev uses 8001 to avoid common port conflicts)*
+
+### Seed accounts (all use password `password`)
+
+| Role | Username | What you can do |
+| :--- | :--- | :--- |
+| 🛡 Admin | `admin` | Everything |
+| 🎯 Manager | `manager` | Approve / reject critical remediations |
+| 🔧 Engineer | `engineer` | File incidents, watch agents work |
+| 📓 Auditor | `auditor` | Read the audit trail |
+
+### Optional: enable real CrewAI / OpenAI execution
+
+By default `SIMULATION_MODE=true` — the agent pipeline runs **deterministically without any LLM calls** so the demo is reproducible. To run real CrewAI agents instead:
+
+```bash
+# in backend/ (or via docker-compose.yml)
+export SIMULATION_MODE=false
+export OPENAI_API_KEY=sk-...
+python run.py
+```
+
+On any LLM error the platform silently falls back to simulation so the demo never dies on stage.
+
+### Troubleshooting
+
+| Symptom | Fix |
+| :--- | :--- |
+| `WinError 10013` / port 8000 busy | Backend defaults to **8001** locally. Override with `APP_PORT=8001 python run.py` (already the default in `run.py`). |
+| `bcrypt password cannot be longer than 72 bytes` | `requirements.txt` pins `bcrypt==4.0.1` (passlib 1.7 is incompatible with bcrypt 4.1+). Re-install: `pip install -r requirements.txt --force-reinstall`. |
+| `email-validator is not installed` | Re-install requirements. `email-validator>=2.0.0` is pinned. |
+| Seeded users missing / want fresh state | Delete `backend/aegisops.db` and restart `python run.py`. |
 
 ---
 
@@ -77,10 +279,9 @@ docker compose up --build
 
 | Section | Purpose |
 |---------|---------|
-| [Problem & Solution](#sec-wire) | What AegisOps solves |
-| [UiPath Components](#sec-jury) | Components used (required for judges) |
+| [📋 Submission Brief](#submission-brief) | Project description · UiPath components · Agent type · Setup *(judges' checklist)* |
+| [Problem & Solution](#sec-wire) | What AegisOps solves *(extended)* |
 | [Architecture](#sec-orchestration) | System design |
-| [Setup & Run](#sec-running) | Installation & execution |
 | [Simulation Mode](#sec-simulation) | How the demo works |
 | [Repo Structure](#sec-repomap) | File layout |
 
@@ -99,38 +300,6 @@ docker compose up --build
 The whole platform runs **out of the box with zero API keys** in deterministic
 simulation mode — built so judges, recruiters, and you can clone it,
 `docker compose up`, and watch agents work in under three minutes.
-
----
-
-<a id="sec-jury"></a>
-
-## ┃ FOR THE JURY  ·  *UiPath components & agent type*
-
-**Problem it solves.** Production incident response is slow, manual, and
-error-prone — triage, log analysis, runbook lookup, and root-cause all happen
-by hand under SLA pressure. AegisOps automates the repeatable 80% with a crew
-of agents while keeping a human approval gate on the dangerous 20%.
-
-**Agent type — Coded Agents.** All six agents are **code-defined (coded
-agents)**, implemented in Python with CrewAI role/goal/backstory definitions in
-[`backend/app/services/agents.py`](backend/app/services/agents.py). There are
-no low-code/Studio-designed agents in this solution.
-
-**UiPath components used:**
-
-| Component | Role in AegisOps |
-| :-------- | :--------------- |
-| **UiPath Maestro** | Orchestration layer — drives the sequential six-agent master workflow, the per-agent retry loop (up to 3×), and the human-in-the-loop escalation gate. Implemented in [`uipath/uipath_maestro_flow.py`](uipath/uipath_maestro_flow.py) and [`backend/app/services/uipath_maestro.py`](backend/app/services/uipath_maestro.py). |
-| **Coded Agents** | The six analysis agents (Intake → Audit), defined in code via CrewAI. |
-| **API Workflows** | The FastAPI backend exposes incident, approval, and audit operations the orchestration calls. |
-| **Human-in-the-loop / Action App** | Manager approval gate: critical or sub-70%-confidence incidents halt and route to a human approver before remediation. |
-
-> **Simulation mode.** `SIMULATION_MODE=true` (the default) runs the agent
-> pipeline deterministically with **zero external dependencies or API keys** so
-> the demo is reproducible for judging. Set `SIMULATION_MODE=false` +
-> `OPENAI_API_KEY` to execute real CrewAI; on any error it falls back to
-> simulation. Setup steps for both modes are in the **Running the platform**
-> section below.
 
 ---
 
@@ -290,42 +459,6 @@ allocation grid.
 ---
 
 <a id="sec-running"></a>
-
-## ┃ RUNNING THE PLATFORM
-
-### 🖥️ Local development
-
-**Step 1: Backend**
-```bash
-cd backend
-python -m venv .venv
-source .venv/Scripts/activate      # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-python run.py                       # Seeds DB, runs on http://localhost:8001
-```
-
-**Step 2: Frontend** (in a new terminal)
-```bash
-cd frontend
-npm install
-npm run dev                         # http://localhost:3000
-```
-
-**Step 3: Access**
-- Frontend: http://localhost:3000
-- API docs: http://localhost:8001/docs
-- Use demo logins: `admin`/`manager`/`engineer`/`auditor` (password: `password`)
-
-### 🐳 Full stack via Docker Compose
-
-```bash
-docker compose up --build
-```
-
-All services (Postgres, Redis, ChromaDB, backend, frontend) start automatically.
-
----
-
 <a id="sec-simulation"></a>
 
 ## ┃ SIMULATION MODE  ·  *the magic*
