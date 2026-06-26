@@ -33,7 +33,7 @@ production incidents in minutes, with a human approval gate on every critical fi
 [![Tailwind](https://img.shields.io/badge/Tailwind-v4-1b1813?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Simulation](https://img.shields.io/badge/runs-zero%20API%20keys-1f7a5c?style=flat-square&labelColor=1b1813)](#sec-simulation)
 
-**[🎬 Watch the Demo](https://youtu.be/Xa3JxiJV158) · [📊 Presentation Deck](https://docs.google.com/presentation/d/1H5sW_55V2HzTdZhr1lUbJ7WXjz7Ewxll/edit?usp=sharing) · [📋 Submission Brief](#submission-brief) · [🚀 Quick Start](#quick-start) · [📖 Full Docs](#sec-running)**
+**[🎬 Watch the Demo](https://youtu.be/Xa3JxiJV158) · [📊 Presentation Deck](https://docs.google.com/presentation/d/1ZQ6dOAiKnDe1i1EmCz048CyhqBv2-pnP/edit?usp=sharing) · [📋 Submission Brief](#submission-brief) · [🚀 Quick Start](#quick-start) · [📖 Full Docs](#sec-running)**
 
 [![Watch the demo](https://img.youtube.com/vi/Xa3JxiJV158/maxresdefault.jpg)](https://youtu.be/Xa3JxiJV158)
 
@@ -56,7 +56,7 @@ production incidents in minutes, with a human approval gate on every critical fi
 | **UiPath Components** | ✅ Provided | [↓ UiPath Components](#uipath-components) |
 | **Agent Type** | ✅ Provided — *Coded Agents, exclusively* | [↓ Agent Type](#agent-type) |
 | **Setup Instructions** | ✅ Provided — step-by-step, runs with zero API keys | [↓ Setup Instructions](#setup-instructions) |
-| **Deck on the official UiPath template** | ✅ Built on the required [template](https://docs.google.com/presentation/d/1U_60smXuoY-9g_fVQCLZc_gKMDWYZ1_g/edit) | Submitted via the AgentHack submission form |
+| **Deck on the official UiPath template** | ✅ Built on the required [template](https://docs.google.com/presentation/d/1U_60smXuoY-9g_fVQCLZc_gKMDWYZ1_g/edit) | [View our deck](https://docs.google.com/presentation/d/1ZQ6dOAiKnDe1i1EmCz048CyhqBv2-pnP/edit?usp=sharing) · also submitted via the AgentHack form |
 | **UiPath Labs org / environment URL** | ✅ Provided in the submission form | Per UiPath guidance the link is entered in the form field *"What is the UiPath Labs link/environment URL…"* — not committed to this public repo |
 
 ## Project Description
