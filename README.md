@@ -98,8 +98,11 @@ Honest accounting of what is present in this submission:
 | **Human-in-the-loop approval gate** (Action App pattern) | ✅ **Yes, implemented in code** | The orchestrator halts on critical severity OR confidence < 70%, creates an `Approval` row, and waits. A manager/admin role actions the request from the Approvals Center UI; the workflow resumes via [`resume_after_approval`](backend/app/services/uipath_maestro.py). UI route: [`frontend/src/app/approvals/page.tsx`](frontend/src/app/approvals/page.tsx). |
 | **RAG / Knowledge Base** | ✅ **Yes** | ChromaDB vector store (when enabled) with a SQL keyword fallback over a `documents` table of Standard Operating Procedures. See [`backend/app/services/rag_service.py`](backend/app/services/rag_service.py). |
 | **Compliance / report export** | ✅ **Yes** | One-click downloadable incident report from the detail page — full agent trail, root cause, resolution plan, approval decision and audit log. Endpoint: `GET /api/incidents/{id}/report`. |
-| Agent Builder (low-code) | ❌ **No** | Not used in this submission. |
-| UiPath Studio (RPA) | ❌ **No** | Not used in this submission. |
+
+> **Not used:** Agent Builder and UiPath Studio (RPA) — by design. AegisOps is a
+> **Coded-Agent** solution, so its agents are authored in Python/CrewAI rather than
+> in the low-code Agent Builder, and orchestration follows the Maestro pattern rather
+> than classic RPA.
 
 ## Agent Type
 
