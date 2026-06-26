@@ -48,6 +48,17 @@ production incidents in minutes, with a human approval gate on every critical fi
 > The four sections below answer the required submission checklist directly.
 > Skip ahead if you'd rather see the live app at [Quick Start](#quick-start).
 
+### ✅ Required submission items — at a glance
+
+| Judge's checklist item | Status | Where to find it |
+| :--- | :--- | :--- |
+| **Project Description** | ✅ Provided | [↓ Project Description](#project-description) |
+| **UiPath Components** | ✅ Provided | [↓ UiPath Components](#uipath-components) |
+| **Agent Type** | ✅ Provided — *Coded Agents, exclusively* | [↓ Agent Type](#agent-type) |
+| **Setup Instructions** | ✅ Provided — step-by-step, runs with zero API keys | [↓ Setup Instructions](#setup-instructions) |
+| **Deck on the official UiPath template** | ✅ Built on the required [template](https://docs.google.com/presentation/d/1U_60smXuoY-9g_fVQCLZc_gKMDWYZ1_g/edit) | Submitted via the AgentHack submission form |
+| **UiPath Labs org / environment URL** | ✅ Provided in the submission form | Per UiPath guidance the link is entered in the form field *"What is the UiPath Labs link/environment URL…"* — not committed to this public repo |
+
 ## Project Description
 
 **AegisOps AI is a multi-agent IT incident-response command center.**

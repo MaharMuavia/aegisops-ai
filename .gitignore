@@ -36,6 +36,9 @@ frontend/next-env.d.ts
 backend/.env
 frontend/.env*
 
+# ---- Deck build scratch (template download, build script, QA renders) ----
+.deckwork/
+
 # ---- Editor / OS ----
 .DS_Store
 Thumbs.db
