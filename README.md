@@ -23,7 +23,7 @@ production incidents in minutes, with a human approval gate on every critical fi
 
 [![CI](https://img.shields.io/github/actions/workflow/status/MaharMuavia/aegisops-ai/ci.yml?branch=main&style=flat-square&label=CI%20%C2%B7%20build%20the%20bridge&labelColor=1b1813)](https://github.com/MaharMuavia/aegisops-ai/actions/workflows/ci.yml)
 [![Last commit](https://img.shields.io/github/last-commit/MaharMuavia/aegisops-ai?style=flat-square&labelColor=1b1813&color=d9381e)](https://github.com/MaharMuavia/aegisops-ai/commits/main)
-[![License](https://img.shields.io/badge/license-MIT-1f7a5c?style=flat-square&labelColor=1b1813)](#)
+[![License](https://img.shields.io/badge/license-MIT-1f7a5c?style=flat-square&labelColor=1b1813)](LICENSE)
 [![Hackathon](https://img.shields.io/badge/UiPath-AgentHack%202026-d9381e?style=flat-square&labelColor=1b1813)](https://uipath.com)
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-1b1813?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org)
@@ -54,7 +54,7 @@ production incidents in minutes, with a human approval gate on every critical fi
 | :--- | :--- | :--- |
 | **Project Description** | ✅ Provided | [↓ Project Description](#project-description) |
 | **UiPath Components** | ✅ Provided | [↓ UiPath Components](#uipath-components) |
-| **Agent Type** | ✅ Provided — *Coded Agents, exclusively* | [↓ Agent Type](#agent-type) |
+| **Agent Type** | ✅ Provided — *Combination (Coded + Low-code)* | [↓ Agent Type](#agent-type) |
 | **Setup Instructions** | ✅ Provided — step-by-step, runs with zero API keys | [↓ Setup Instructions](#setup-instructions) |
 | **Deck on the official UiPath template** | ✅ Built on the required [template](https://docs.google.com/presentation/d/1U_60smXuoY-9g_fVQCLZc_gKMDWYZ1_g/edit) | [View our deck](https://docs.google.com/presentation/d/1ZQ6dOAiKnDe1i1EmCz048CyhqBv2-pnP/edit?usp=sharing) · also submitted via the AgentHack form |
 | **UiPath Labs org / environment URL** | ✅ Provided in the submission form | Per UiPath guidance the link is entered in the form field *"What is the UiPath Labs link/environment URL…"* — not committed to this public repo |
@@ -93,25 +93,32 @@ Honest accounting of what is present in this submission:
 | UiPath component | Used in AegisOps? | Where / how |
 | :--- | :--- | :--- |
 | **Coded Agents** | ✅ **Yes** | Six CrewAI agents (role / goal / backstory + delegation) defined in Python at [`backend/app/services/agents.py`](backend/app/services/agents.py). |
-| **UiPath Maestro (sequential master workflow)** | 🟡 **Pattern, implemented in code** | The Maestro sequential-orchestration pattern — sequential agent dispatch, per-agent retry loops, and human-in-the-loop escalation gates — is implemented in custom Python at [`backend/app/services/uipath_maestro.py`](backend/app/services/uipath_maestro.py). A separate end-to-end demo script at [`uipath/uipath_maestro_flow.py`](uipath/uipath_maestro_flow.py) acts as a headless Maestro client that drives the full workflow via the API. **This solution does not call the hosted UiPath Maestro product**; the orchestration pattern is reproduced in code so the demo runs anywhere with zero external dependencies. |
+| **UiPath Maestro (BPMN)** | ✅ **Yes — BPMN process in UiPath Labs** | A Maestro BPMN process (`AegisOps Incident Response`) runs on **UiPath Automation Cloud**: it orchestrates the agent tasks, an exclusive gateway escalation gate, and a human-in-the-loop **User Task** approval, then resumes to remediation/audit. The same sequential-orchestration pattern is *also* reproduced in Python at [`backend/app/services/uipath_maestro.py`](backend/app/services/uipath_maestro.py) so the repo demo runs anywhere with zero external dependencies. |
+| **Agent Builder (low-code)** | ✅ **Yes** | An **Autonomous Root Cause Analysis agent** built in **UiPath Agent Builder** on UiPath Automation Cloud, bound into the Maestro process. |
 | **API Workflows** | ✅ **Yes** | FastAPI surfaces 6 routers (`auth · incidents · approvals · audit · metrics · agents`) under `/api/*`; the orchestrator calls these endpoints to advance state. Full Swagger UI at `/docs`. See [`backend/app/api/endpoints/`](backend/app/api/endpoints/). |
 | **Human-in-the-loop approval gate** (Action App pattern) | ✅ **Yes, implemented in code** | The orchestrator halts on critical severity OR confidence < 70%, creates an `Approval` row, and waits. A manager/admin role actions the request from the Approvals Center UI; the workflow resumes via [`resume_after_approval`](backend/app/services/uipath_maestro.py). UI route: [`frontend/src/app/approvals/page.tsx`](frontend/src/app/approvals/page.tsx). |
 | **RAG / Knowledge Base** | ✅ **Yes** | ChromaDB vector store (when enabled) with a SQL keyword fallback over a `documents` table of Standard Operating Procedures. See [`backend/app/services/rag_service.py`](backend/app/services/rag_service.py). |
 | **Compliance / report export** | ✅ **Yes** | One-click downloadable incident report from the detail page — full agent trail, root cause, resolution plan, approval decision and audit log. Endpoint: `GET /api/incidents/{id}/report`. |
 
-> **Not used:** Agent Builder and UiPath Studio (RPA) — by design. AegisOps is a
-> **Coded-Agent** solution, so its agents are authored in Python/CrewAI rather than
-> in the low-code Agent Builder, and orchestration follows the Maestro pattern rather
-> than classic RPA.
+> **Not used:** UiPath Studio (RPA) — by design; orchestration uses the
+> Maestro BPMN pattern with AI agents rather than classic RPA robots.
 
 ## Agent Type
 
-**Coded Agents — exclusively.**
+**Combination — Coded Agents *and* a Low-code Agent.**
 
-All six agents in this solution are **code-defined** (Python + CrewAI). No
-low-code / Agent Builder agents are used. Each agent has explicit `role`,
-`goal`, and `backstory` definitions and runs inside a sequential CrewAI
-process driven by the Maestro orchestrator.
+This submission spans two complementary layers:
+
+- **Coded Agents (reference implementation, this repo).** Six code-defined
+  agents (Python + CrewAI) with explicit `role` / `goal` / `backstory`, run by a
+  Maestro-style sequential orchestrator. Source:
+  [`backend/app/services/agents.py`](backend/app/services/agents.py).
+- **Low-code Agent (UiPath Automation Cloud / Labs).** An **Autonomous Root
+  Cause Analysis agent** built in **UiPath Agent Builder**, orchestrated by a
+  **UiPath Maestro BPMN process** whose escalation gateway routes critical /
+  low-confidence cases to a human **User Task** approval before remediation.
+
+The six coded agents in the reference implementation:
 
 | # | Agent | Role | Goal |
 | :- | :--- | :--- | :--- |
