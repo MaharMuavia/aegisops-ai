@@ -33,9 +33,9 @@ production incidents in minutes, with a human approval gate on every critical fi
 [![Tailwind](https://img.shields.io/badge/Tailwind-v4-1b1813?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Simulation](https://img.shields.io/badge/runs-zero%20API%20keys-1f7a5c?style=flat-square&labelColor=1b1813)](#sec-simulation)
 
-**[🎬 Watch the Demo](https://youtu.be/Xa3JxiJV158) · [📊 Presentation Deck](https://docs.google.com/presentation/d/1ZQ6dOAiKnDe1i1EmCz048CyhqBv2-pnP/edit?usp=sharing) · [📋 Submission Brief](#submission-brief) · [🚀 Quick Start](#quick-start) · [📖 Full Docs](#sec-running)**
+**[🎬 Watch the Demo](https://youtu.be/EuPgeXrPiKY) · [📊 Presentation Deck](https://docs.google.com/presentation/d/1ZQ6dOAiKnDe1i1EmCz048CyhqBv2-pnP/edit?usp=sharing) · [📋 Submission Brief](#submission-brief) · [🚀 Quick Start](#quick-start) · [📖 Full Docs](#sec-running)**
 
-[![Watch the demo](https://img.youtube.com/vi/Xa3JxiJV158/maxresdefault.jpg)](https://youtu.be/Xa3JxiJV158)
+[![Watch the demo](https://img.youtube.com/vi/EuPgeXrPiKY/maxresdefault.jpg)](https://youtu.be/EuPgeXrPiKY)
 
 </div>
 
@@ -58,6 +58,7 @@ production incidents in minutes, with a human approval gate on every critical fi
 | **Setup Instructions** | ✅ Provided — step-by-step, runs with zero API keys | [↓ Setup Instructions](#setup-instructions) |
 | **Deck on the official UiPath template** | ✅ Built on the required [template](https://docs.google.com/presentation/d/1U_60smXuoY-9g_fVQCLZc_gKMDWYZ1_g/edit) | [View our deck](https://docs.google.com/presentation/d/1ZQ6dOAiKnDe1i1EmCz048CyhqBv2-pnP/edit?usp=sharing) · also submitted via the AgentHack form |
 | **UiPath Labs org / environment URL** | ✅ Provided in the submission form | Per UiPath guidance the link is entered in the form field *"What is the UiPath Labs link/environment URL…"* — not committed to this public repo |
+| **Demo video shows the solution running on the UiPath Platform** | ✅ Yes | [Watch the demo](https://youtu.be/EuPgeXrPiKY) — includes a live segment of the Maestro BPMN process executing on UiPath Automation Cloud, with the Agent Builder agent running inside it and the full execution trace. |
 
 ## Project Description
 
@@ -93,8 +94,8 @@ Honest accounting of what is present in this submission:
 | UiPath component | Used in AegisOps? | Where / how |
 | :--- | :--- | :--- |
 | **Coded Agents** | ✅ **Yes** | Six CrewAI agents (role / goal / backstory + delegation) defined in Python at [`backend/app/services/agents.py`](backend/app/services/agents.py). |
-| **UiPath Maestro (BPMN)** | ✅ **Yes — BPMN process in UiPath Labs** | A Maestro BPMN process (`AegisOps Incident Response`) runs on **UiPath Automation Cloud**: it orchestrates the agent tasks, an exclusive gateway escalation gate, and a human-in-the-loop **User Task** approval, then resumes to remediation/audit. The same sequential-orchestration pattern is *also* reproduced in Python at [`backend/app/services/uipath_maestro.py`](backend/app/services/uipath_maestro.py) so the repo demo runs anywhere with zero external dependencies. |
-| **Agent Builder (low-code)** | ✅ **Yes** | An **Autonomous Root Cause Analysis agent** built in **UiPath Agent Builder** on UiPath Automation Cloud, bound into the Maestro process. |
+| **UiPath Maestro (BPMN)** | ✅ **Yes — BPMN process published & run in UiPath Labs** | A Maestro BPMN process (`AegisOps Incident Response`) is published and **executed successfully on UiPath Automation Cloud**: Start event → Intake & Triage → Log Forensics → Knowledge (RAG) → Root Cause (Agent) → Resolution → Remediation → Audit → End — see the demo video for the live execution trace. The escalation-gate + human-approval branching (exclusive gateway → manager `User Task`) is implemented in the **Python reference implementation** at [`backend/app/services/uipath_maestro.py`](backend/app/services/uipath_maestro.py); porting that branch into the Labs BPMN process is a documented next step. |
+| **Agent Builder (low-code)** | ✅ **Yes** | An **Autonomous Root Cause Analysis agent** built in **UiPath Agent Builder** on UiPath Automation Cloud, published and bound into the Root Cause step of the Maestro process — see it execute in the demo video's platform segment. |
 | **API Workflows** | ✅ **Yes** | FastAPI surfaces 6 routers (`auth · incidents · approvals · audit · metrics · agents`) under `/api/*`; the orchestrator calls these endpoints to advance state. Full Swagger UI at `/docs`. See [`backend/app/api/endpoints/`](backend/app/api/endpoints/). |
 | **Human-in-the-loop approval gate** (Action App pattern) | ✅ **Yes, implemented in code** | The orchestrator halts on critical severity OR confidence < 70%, creates an `Approval` row, and waits. A manager/admin role actions the request from the Approvals Center UI; the workflow resumes via [`resume_after_approval`](backend/app/services/uipath_maestro.py). UI route: [`frontend/src/app/approvals/page.tsx`](frontend/src/app/approvals/page.tsx). |
 | **RAG / Knowledge Base** | ✅ **Yes** | ChromaDB vector store (when enabled) with a SQL keyword fallback over a `documents` table of Standard Operating Procedures. See [`backend/app/services/rag_service.py`](backend/app/services/rag_service.py). |
